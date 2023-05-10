@@ -1,0 +1,217 @@
+﻿@import "https://unpkg.com/open-props";
+@import "https://unpkg.com/open-props/normalize.min.css";
+
+@media all and (max-width: 710px) {
+  .pc {
+    grid-template-columns: repeat(1, max-content);
+  }
+}
+
+@media all and (min-width: 710px) and (max-width: 1050px) {
+  .pc {
+    grid-template-columns: repeat(2, max-content);
+  }
+}
+
+@media all and (min-width: 1050px) and (max-width: 1390px) {
+  .pc {
+    grid-template-columns: repeat(3, max-content);
+  }
+}
+
+@media all and (min-width: 1390px) and (max-width: 1730px) {
+  .pc {
+    grid-template-columns: repeat(4, max-content);
+  }
+}
+
+@media all and (min-width: 1730px) {
+  .pc {
+    grid-template-columns: repeat(5, max-content);
+  }
+}
+
+html {
+  background: #ffe8cc;
+  font-family: "Open Sans", sans-serif;
+  color: black;
+  font-size: var(--font-size-2);
+  font-weight: var(--font-weight-1);
+  line-height: var(--font-lineheight-3);
+}
+
+body {
+  display: grid;
+  place-items: center;
+}
+
+body > .top {
+  margin-top: 1%;
+  position: relative;
+  display: grid;
+  justify-items: center;
+}
+
+body > .computations {
+  padding: 10px;
+  position: relative;
+  display: grid;
+  grid-auto-flow: row;
+  place-items: center;
+  justify-items: stretch;
+}
+
+.computations > table,
+th,
+td {
+  border: 2px solid black;
+  border-collapse: collapse;
+  padding: 6px;
+}
+
+.top > form {
+  width: max-content;
+}
+
+body > .pc {
+  box-sizing: border-box;
+  position: relative;
+  display: grid;
+  gap: 20px;
+  padding: 20px;
+}
+
+.pc-element {
+  position: relative;
+  background: #ffe8cc;
+}
+
+.pc-element > figcaption {
+  position: absolute;
+  top: 5px;
+  left: 10px;
+  width: 305px;
+  white-space: pre-wrap;
+  word-break: normal;
+}
+
+.pc-element > span {
+  position: absolute;
+  bottom: 17px;
+  height: 10px;
+  width: 10px;
+  border-radius: 40%;
+}
+
+.pc-element > .not-compute,
+.pc-element > .dropdown {
+  position: absolute;
+  bottom: 50px;
+  right: 14px;
+}
+
+.dropdown > .link + .menu {
+  position: absolute;
+  right: 41px;
+  top: 40px;
+  opacity: 0;
+  transition: opacity 110ms ease-in-out;
+  pointer-events: none;
+}
+
+.dropdown.active > .link + .menu {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.menu > .text {
+  position: absolute;
+  right: 144px;
+  bottom: 115px;
+  width: max-content;
+}
+
+.menu > .inp {
+  position: absolute;
+  right: 9px;
+  bottom: 83px;
+  width: 250px;
+}
+
+.menu > .xyz {
+  position: absolute;
+  right: 9px;
+  bottom: 53px;
+  width: 250px;
+}
+
+.menu > .btn {
+  position: absolute;
+  right: 93px;
+  bottom: 20px;
+}
+
+.menu > .name {
+  position: absolute;
+  bottom: 110px;
+  right: -40px;
+  width: 180px;
+  outline: none;
+}
+
+.menu > .name:invalid {
+  background-color: #ffe8cc;
+  border: 1px solid #ff6b6b;
+}
+
+.menu > .name:valid {
+  background-color: #ffe8cc;
+  border: 1px solid #a9e34b;
+}
+
+.menu > .files {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+.btn {
+  padding: 4px 4px;
+  background: black;
+  color: #ffe8cc;
+  border-radius: 10px;
+  transition: transform 0.3s ease;
+}
+
+.btn.solo {
+  position: relative;
+}
+
+.btn::after {
+  content: "";
+  position: absolute;
+  opacity: 0.2;
+  background: black;
+  border-radius: inherit;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+  transition: transform 0.3s ease;
+}
+
+.solo::after {
+  border-radius: auto;
+}
+
+.btn:hover {
+  transform: translate(-4px, -4px);
+}
+
+.btn:hover::after {
+  transform: translate(8px, 8px);
+}

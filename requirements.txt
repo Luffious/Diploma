@@ -1,0 +1,4 @@
+Django==4.0.5
+fabric==2.7.0
+pandas==1.4.2
+paramiko==2.11.0

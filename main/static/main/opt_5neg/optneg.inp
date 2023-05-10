@@ -1,0 +1,20 @@
+! VWN DIIS SOSCF def2-SVP def2-SVP/J Grid2 FinalGrid4 Opt NumFreq PrintBasis xyzfile
+
+%method
+RI on
+end
+
+%pal
+nprocs 6
+end
+
+%geom
+NumHess true
+MaxIter 1
+end
+
+%Freq
+Temp 273.15, 298.15, 309.75
+end
+
+* xyzfile 0 1 a.xyz

@@ -1,0 +1,23 @@
+! REVPBE D3BJ DIIS SOSCF def2-TZVP def2-TZVP/J COSMO(water) Grid5 FinalGrid7 Opt NumFreq PrintBasis xyzfile
+
+%method
+RI on
+end
+
+%pal
+nprocs 6
+end
+
+%geom
+NumHess true
+end
+
+%Freq
+Temp 273.15, 298.15, 309.75
+end
+
+%scf MAXITER 300
+SOSCFStart 0.0001
+end
+
+* xyzfile 0 1 water_init.xy

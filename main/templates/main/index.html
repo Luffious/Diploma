@@ -1,0 +1,179 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http_equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta content='true' name='HandheldFriendly' />
+    <meta content='width' name='MobileOptimized' />
+    <meta content='yes' name='apple-mobile-web-app-capable' />
+    <title>Утилита мониторинга и постановки расчётов кафедры ИКТ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.1/css/all.css">
+    {% load static %}
+    <link rel="stylesheet" href="{%static 'main/css/styles.css' %}">
+    <link rel="shortcut icon" type="image/png" href="{%static 'main/img/favicon.ico' %}">
+</head>
+
+<body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener("click", e => {
+                var isdropbutton = e.target.matches(".link");
+                if (isdropbutton) {
+                    var currentdropdown = e.target.closest(".dropdown");
+                    currentdropdown.classList.toggle("active");
+                    document.querySelectorAll(".dropdown.active").forEach(dropdown => {
+                        if (dropdown === currentdropdown) return;
+                    });
+                }
+                else { return; }
+            });
+
+            document.addEventListener("change", e => {
+                var isinput = e.target.matches(".files");
+                var label = e.target.labels[0];
+                if (isinput) {
+                    var name = e.target.value.split('\\');
+                    if (name[0] != "") { label.textContent = name[2]; }
+                    else {
+                        if (label.className == "inp") { label.textContent = "Файл .inp"; }
+                        if (label.className == "xyz") { label.textContent = "Файл .xyz"; }
+                    }
+                }
+            });
+        });
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags %} alert("{{ message }}"); {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+    <div class="top">
+        <form method="post" action="{% url 'ssh' %}" >
+            {% csrf_token %}
+            Обновить состояния
+            <button class="btn solo fa-solid fa-arrows-rotate" style="padding: 5px 5px;"></button>
+        </form>
+        <form method="post" action="{% url 'wolall' %}">
+            {% csrf_token %}
+            Включить все выключенные компьютеры
+            <button class="btn solo fa-solid fa-power-off"></button>
+        </form>
+    </div>
+    <div class="pc">
+        {% for comp in data %}
+            <figure class="pc-element">
+                <figcaption>{{ "№: "|add:comp.7|add:"  ОС: "|add:comp.8|add:"  ЦП T°: "|add:comp.9 }}</figcaption>
+                <img src="{%static 'main/img/PC.png' %}">
+                {% if comp.8 == "Недоступно" %}
+                    <span style="background: #fcc419; box-shadow: #fcc419 0px 0px 3px 3px;"></span>
+                {% elif comp.8 == "-" %}
+                    <span style="background: #f03e3e; box-shadow: #f03e3e 0px 0px 3px 3px;"></span>
+                    <form class="not-compute" action="{% url 'wol' comp.7 %}">
+                        <button class="btn fa-solid fa-power-off"></button>
+                    </form>
+                {% else %}
+                    <span style="background: #37b24d; box-shadow: #37b24d 0px 0px 3px 3px;"></span>
+                    {% if comp.8 == "Linux" %}
+                        <div class="dropdown">
+                            <button class="btn fa-solid fa-flask-vial link" style="padding: 6px;"></button>
+                            <form method="post" enctype="multipart/form-data" class="menu"  
+                            action="{% url 'send' comp.7 %}">
+                                {% csrf_token %}
+                                <label class="text" for="text">Имя расчёта:</label> 
+                                <input type="text" name="foldername" class="name" required="true" id="text"
+                                title="Только латиница, цифры, нижнее подчёркивание и тире" pattern="^[a-zA-Z0-9_-]+$">
+                                <label class="inp" for="{{ "inp"|add:comp.7 }}">Файл .inp</label>
+                                <input type="file" name="fileinp" class="files" accept=".inp" required="true" id="{{ "inp"|add:comp.7 }}">
+                                <label class="xyz" for="{{ "xyz"|add:comp.7 }}">Файл .xyz</label>
+                                <input type="file" name="filexyz" class="files" accept=".xyz" required="true" id="{{ "xyz"|add:comp.7 }}">
+                                <button type="submit" class="btn fa-solid fa-upload" style="padding: 4px;"></button>
+                            </form> 
+                        </div>
+                    {% elif comp.8 == "Windows" %}
+                        <form class="not-compute" action="{% url 'reboot' comp.7 %}">
+                            <button class="btn fa-solid fa-arrow-rotate-right"></button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+            </figure>
+        {% endfor %}
+    </div>
+    {% if tasks %}
+        <div class="computations">
+            <table>
+                <caption>Расчёты</caption>
+                <tr>
+                    <th>Компьютер</th>
+                    <th>Расчёт</th>
+                    <th>Состояние</th>
+                    <th>Действия</th>
+                </tr>
+                {% for task in tasks %}
+                    {% if "заверш" in task.3 %}
+                        <tr>
+                            {% if " успешно" in task.3 %}
+                                <th style="color: #2b8a3e;">{{ task.0 }}</th>
+                                <th style="color: #2b8a3e;">{{ task.1 }}</th>
+                                <td style="color: #2b8a3e;">{{ task.3|add:task.4 }}</td>
+                                <th style="color: #2b8a3e;">
+                                    <form action="{% url 'get' task.0 task.1 task.2 %}">
+                                        Скачать
+                                        <button class="btn solo fa-solid fa-download"></button>
+                                    </form>
+                                    <form action="{% url 'remove' task.0 task.1 task.2 %}">
+                                        Удалить
+                                        <button class="btn solo fa-solid fa-ban"></button>
+                                    </form>
+                                </th>
+                            {% elif "неуспешно" in task.3 %}
+                                <th style="color: #1c7ed6;">{{ task.0 }}</th>
+                                <th style="color: #1c7ed6;">{{ task.1 }}</th>
+                                <td style="color: #1c7ed6;">{{ task.3|add:task.4 }}</td>
+                                <th style="color: #1c7ed6;">
+                                    <form action="{% url 'get' task.0 task.1 task.2 %}">
+                                        Скачать
+                                        <button class="btn solo fa-solid fa-download"></button>
+                                    </form>
+                                    <form action="{% url 'remove' task.0 task.1 task.2 %}">
+                                        Удалить
+                                        <button class="btn solo fa-solid fa-ban"></button>
+                                    </form>
+                                </th>
+                            {% elif "прерван" in task.3 %}
+                                <th style="color: #f03e3e;">{{ task.0 }}</th>
+                                <th style="color: #f03e3e;">{{ task.1 }}</th>
+                                <td style="color: #f03e3e;">{{ task.3|add:task.4 }}</td>
+                                <th style="color: #f03e3e;">
+                                    <form action="{% url 'get' task.0 task.1 task.2 %}">
+                                        Скачать
+                                        <button class="btn solo fa-solid fa-download"></button>
+                                    </form>
+                                    <form action="{% url 'remove' task.0 task.1 task.2 %}">
+                                        Удалить
+                                        <button class="btn solo fa-solid fa-ban"></button>
+                                    </form>
+                                </th>
+                            {% endif %}
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <th>{{ task.0 }}</th>
+                            <th>{{ task.1 }}</th>
+                            <td>{{ task.3|add:task.4 }}</td>
+                            <th>
+                                <form action="{% url 'calculations' task.0 task.1 task.2 %}">
+                                    Обновить состояние
+                                    <button class="btn solo fa-solid fa-rotate"></button>
+                                </form>
+                            </th>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
+</html>

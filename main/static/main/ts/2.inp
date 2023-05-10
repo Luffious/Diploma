@@ -1,0 +1,23 @@
+! BLYP def2-SVP def2-SVP/J D3BJ OptTS NumFreq PrintBasis xyzfile
+
+%method
+RI on
+end
+
+%pal
+nprocs 6
+end
+
+%geom
+NumHess true
+end
+
+%Freq
+Temp 273.15, 298.15, 309.75
+end
+
+%scf MAXITER 300
+SOSCFStart 0.0001
+end
+
+* xyzfile 0 1 ts.xyz
